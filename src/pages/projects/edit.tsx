@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import { IEmployee } from "../employees/interface";
 
 export const ProjectEdit = () => {
-  const { formProps, saveButtonProps, query } = useForm();
+  const { formProps, saveButtonProps, query, onFinish } = useForm();
 
   const projectData = query?.data?.data;
 
@@ -16,9 +16,16 @@ export const ProjectEdit = () => {
    
   });
 
+  const submit = (e:any)=> {
+    onFinish({
+      warranty: parseInt(e.warranty),
+    });
+    
+  };
+
   return (
     <Edit saveButtonProps={saveButtonProps}>
-      <Form {...formProps} layout="vertical">
+      <Form {...formProps} layout="vertical" onFinish={submit}>
         <Form.Item
           label="Project Number"
           name={["projectNumber"]}
@@ -91,6 +98,20 @@ export const ProjectEdit = () => {
         <Form.Item
           label="End Date"
           name={["endDate"]}
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+          // getValueProps={(value) => ({
+          //     value: value ? dayjs(value) : undefined,
+          // })}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item
+          label="Warranty (Day)"
+          name={["warranty"]}
           rules={[
             {
               required: true,

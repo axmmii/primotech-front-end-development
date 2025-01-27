@@ -7,17 +7,24 @@ import { IProject } from "./interface";
 import { IEmployee } from "../employees/interface";
 
 export const ProjectCreate = () => {
-  const { formProps, saveButtonProps, query } = useForm<IProject>();
+  const { formProps, saveButtonProps, query, onFinish } = useForm<IProject>();
   const { selectProps } = useSelect<IEmployee>({
     resource: "employee",
     optionLabel: (item) => `${item.firstName}`,
     optionValue: (item) => item.firstName
    
   });
-
+  const submit = (e:any)=> {
+    console.log("st",e)
+    onFinish({
+      ...e,warranty: parseInt(e.warranty),
+    });
+    
+    
+  };
   return (
     <Create saveButtonProps={saveButtonProps}>
-      <Form {...formProps} layout="vertical">
+      <Form {...formProps} layout="vertical" onFinish={submit}>
         <Form.Item
           label="Project Number:"
           name={"projectNumber"}
@@ -110,7 +117,17 @@ export const ProjectCreate = () => {
         >
           <Input />
         </Form.Item>
-
+        <Form.Item
+          label="Warranty (Day)"
+          name={["warranty"]}
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
         <Form.Item
           label="Status"
           name={["status"]}

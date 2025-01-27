@@ -34,6 +34,8 @@ export const ProjectShow = () => {
             <DateField value={record?.startDate} />
             <Title level={5}>End Date</Title>
             <DateField value={record?.endDate} />
+            <Title level={5}>Warranty (Day)</Title>
+            <TextField value={record?.warranty} />
             <Title level={5}>Project Manager</Title>
             <TextField value={record?.projectManager} />
             <Title level={5}>Status</Title>

@@ -8,6 +8,7 @@ export interface IProject {
     startDate : string
     endDate  : string
     projectManager  : string
+    warranty : number
     status   : string
     createdAt : string
 

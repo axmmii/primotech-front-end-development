@@ -16,7 +16,7 @@ import {
     });
     return (
       <div>
-        <List headerButtons={<CreateButton resource="project" />} />
+        <List headerButtons={<CreateButton resource="project" />} /> 
         <Table {...tableProps} rowKey="id">
           <Table.Column dataIndex="projectNumber" title="Job Number" />
           <Table.Column dataIndex="projectName" title="Project Name" />
@@ -26,6 +26,7 @@ import {
           <Table.Column dataIndex="projectManager" title="PM" />
           <Table.Column dataIndex="startDate" title="Start Date" />
           <Table.Column dataIndex="endDate" title="End Date" />
+          <Table.Column dataIndex="warranty" title="Warranty (Day)" />
           <Table.Column dataIndex="status" title="Status" />
           <Table.Column
             title="Actions"
