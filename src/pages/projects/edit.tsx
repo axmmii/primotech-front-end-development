@@ -3,6 +3,8 @@ import { Edit, useForm, useSelect } from "@refinedev/antd";
 import { Form, Input, DatePicker, Select } from "antd";
 import dayjs from "dayjs";
 import { IEmployee } from "../employees/interface";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 
 export const ProjectEdit = () => {
   const { formProps, saveButtonProps, query, onFinish } = useForm();
@@ -15,17 +17,18 @@ export const ProjectEdit = () => {
     optionValue: (item) => item.firstName
    
   });
-
-  const submit = (e:any)=> {
-    onFinish({
-      warranty: parseInt(e.warranty),
-    });
-    
-  };
-
+   const submit = (e: any) => {
+     console.log("data create :", e);
+     onFinish({
+       ...e,
+       startDate: e.startDate ? dayjs(e.startDate).tz("Asia/Bangkok").startOf("day").format("YYYY-MM-DDTHH:mm:ss[Z]") : null,
+       endDate: e.endDate ? dayjs(e.endDate).tz("Asia/Bangkok").startOf("day").format("YYYY-MM-DDTHH:mm:ss[Z]") : null,
+       warranty: parseInt(e.warranty),
+     });
+   };
   return (
     <Edit saveButtonProps={saveButtonProps}>
-      <Form {...formProps} layout="vertical" onFinish={submit}>
+      <Form {...formProps} layout="vertical" onFinish={submit} autoComplete="off">
         <Form.Item
           label="Project Number"
           name={["projectNumber"]}
@@ -84,44 +87,40 @@ export const ProjectEdit = () => {
         <Form.Item
           label="Start Date"
           name={["startDate"]}
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-          // getValueProps={(value) => ({
-          //     value: value ? dayjs(value) : undefined,
-          // })}
+          getValueProps={(value) => ({ value: value ? dayjs(value) : null })}
+          rules={[{ required: true, message: "Please select a start date!" }]}
         >
-          <Input />
+          <DatePicker  
+         style={{ width: "100%" }}
+          format="DD/MM/YYYY"
+          showTime={false}
+        />
         </Form.Item>
-        <Form.Item
+         <Form.Item
           label="End Date"
           name={["endDate"]}
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-          // getValueProps={(value) => ({
-          //     value: value ? dayjs(value) : undefined,
-          // })}
-        >
-          <Input />
+          getValueProps={(value) => ({ value: value ? dayjs(value) : null })}
+          rules={[{ required: true, message: "Please select an end date!" }]}
+           >
+          <DatePicker 
+            autoComplete="off"
+            format="DD/MM/YYYY"
+            showTime={false}
+            style={{ width: "100%" }}
+          />
         </Form.Item>
         <Form.Item
           label="Warranty (Day)"
           name={["warranty"]}
+          getValueProps={(value) => ({ value: value ? dayjs(value) : null })}
           rules={[
             {
               required: true,
+              message: "Please select a warranty date!",
             },
           ]}
-          // getValueProps={(value) => ({
-          //     value: value ? dayjs(value) : undefined,
-          // })}
         >
-          <Input />
+          <DatePicker autoComplete="off" format="DD/MM/YYYY" style={{ width: "100%" }}  />
         </Form.Item>
         <Form.Item
           label="Project Manager"
@@ -152,6 +151,10 @@ export const ProjectEdit = () => {
               {
                 label: "New",
                 value: "New",
+              },
+              {
+                label: "On Process",
+                value: "On Process",
               },
               {
                 label: "On Process 20%",

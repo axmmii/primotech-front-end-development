@@ -1,9 +1,11 @@
 import type { AuthProvider } from "@refinedev/core";
 
 export const TOKEN_KEY = "refine-auth";
-
+export const IDENTITY_KEY = "IDENTITY";
+export const ROLE_KEY = "USER_ROLE";
 // const API_URL = "http://127.0.0.1:3000/auth";
 // const API_URL = "http://192.168.1.51:3000/auth";
+
 const API_URL = import.meta.env.VITE_API_AUTH_URL;
 export const authProvider: AuthProvider = {
   
@@ -24,6 +26,9 @@ export const authProvider: AuthProvider = {
     const accessToken = await response.json();
     localStorage.setItem(TOKEN_KEY, accessToken.token);
     localStorage.setItem('IDENTITY', accessToken.user);
+    const mockRole = email === "admin@email.com" ? "admin" : "user";
+    localStorage.setItem("USER_ROLE", mockRole);
+    console.log("Mocked role stored:", mockRole);
 
     console.log('login', accessToken);
     
@@ -43,6 +48,8 @@ export const authProvider: AuthProvider = {
   },
   logout: async () => {
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(IDENTITY_KEY);
+    localStorage.removeItem(ROLE_KEY);
     return {
       success: true,
       redirectTo: "/login",
@@ -63,7 +70,11 @@ export const authProvider: AuthProvider = {
       redirectTo: "/login",
     };
   },
-  getPermissions: async () => null,
+  getPermissions: async () => {
+    const role = localStorage.getItem("USER_ROLE");
+    console.log("getPermissions role:", role); // ตรวจสอบค่า Role
+    return role || null;
+  },
   getIdentity: async () => {
     const identity = localStorage.getItem('IDENTITY');
     if (identity) {

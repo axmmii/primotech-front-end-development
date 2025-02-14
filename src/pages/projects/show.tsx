@@ -9,6 +9,7 @@ import {
     MarkdownField,
 } from "@refinedev/antd";
 import { Typography } from "antd";
+import moment from "moment";
 
 const { Title } = Typography;
 
@@ -31,11 +32,13 @@ export const ProjectShow = () => {
             <Title level={5}>Contact Number</Title>
             <TextField value={record?.contactNumber} />
             <Title level={5}>Start Date</Title>
-            <DateField value={record?.startDate} />
+            <DateField value={record?.startDate} format="DD/MM/YYYY" />
             <Title level={5}>End Date</Title>
-            <DateField value={record?.endDate} />
+            <DateField value={record?.endDate} format="DD/MM/YYYY" />
             <Title level={5}>Warranty (Day)</Title>
-            <TextField value={record?.warranty} />
+            <Typography.Text>
+        {record?.warranty ? moment(record.warranty).format("DD/MM/YYYY") : "N/A"}
+      </Typography.Text>
             <Title level={5}>Project Manager</Title>
             <TextField value={record?.projectManager} />
             <Title level={5}>Status</Title>

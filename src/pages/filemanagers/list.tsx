@@ -1,5 +1,5 @@
 "use client";
-import { Divider, message, Progress, Tooltip, Typography } from "antd";
+import { Breadcrumb, Divider, message, Progress, Tooltip, Typography } from "antd";
 import { useState, useEffect } from "react";
 import {
   List,
@@ -66,6 +66,18 @@ export const FileManagerList = () => {
     fetchData();
   }, [currentPath]);
 
+  const getShortenedPath = (path: string, maxLength: number = 40) => {
+    return path.length > maxLength ? path.slice(0, maxLength) + "..." : path;
+  };
+
+  const handleBreadcrumbClick = (path: string) => {
+    setCurrentPath(path);
+    setPathHistory((prevHistory) => {
+      const index = prevHistory.indexOf(path);
+      return prevHistory.slice(0, index + 1);
+    });
+  };
+  
   const handleCreateFolder = async () => {
     try {
       const values = await form.validateFields();
@@ -161,7 +173,10 @@ export const FileManagerList = () => {
       },
     });
   };
-
+  const getFolderName = () => {
+    const pathSegments = currentPath.split("/").filter(Boolean);
+    return pathSegments.length > 0 ? pathSegments[pathSegments.length - 1] : "Root";
+  };
   const handleBackClick = () => {
     if (pathHistory.length > 1) {
       const newPathHistory = [...pathHistory];
@@ -388,13 +403,14 @@ const handleRenameSubmit = async () => {
 };
 
   const handleUpload = async () => {
+    
     try {
       const formData = new FormData();
       fileList.forEach((file: string | Blob) => {
         formData.append("files", file);
       });
       formData.append("directory", currentPath);
-  
+      console.log(uploadFiles)
       await uploadFiles(currentPath, formData, (progressEvent: any) => {
         if (progressEvent.total) {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -459,19 +475,16 @@ const handleFileListRender = () => {
           </Typography.Title>
         </div>
         <Divider style={{ margin: "12px 0" }} />
-        <div
-          style={{
-           
-            padding: "8px 16px",
-            borderRadius: "4px",
-            
-            display: "inline-block",
-            fontSize: "16px",
-            fontWeight: "500",
-          }}
-        >
-          Path: {currentPath}
-        </div>
+        
+        <Breadcrumb style={{ marginLeft: "16px" }}>
+  {pathHistory.map((path, index) => (
+    <Breadcrumb.Item key={index}>
+      <a onClick={() => handleBreadcrumbClick(path)}>
+        {path === "/" ? "Root" : getShortenedPath(path.split("/").filter(Boolean).pop() || "")}
+      </a>
+    </Breadcrumb.Item>
+  ))}
+</Breadcrumb>
       </div>
     }
     headerButtons={
@@ -624,31 +637,14 @@ const handleFileListRender = () => {
             </Space>
           )}
         />
-        <Table.Column
-          dataIndex="createdAt"
-          title="Created At"
-           responsive={['md', 'lg', 'xl']}
-          render={(value) =>
-            value ? (
-              <TextField value={new Date(value).toLocaleString()} />
-            ) : (
-              <TextField value="N/A" />
-            )
-          }
-        />
-        <Table.Column
-          dataIndex="uploadedBy"
-          title="Uploaded By"
-          responsive={['md', 'lg', 'xl']}
-          render={(value) => <TextField value={value || "N/A"} />}
-        />
+       
         <Table.Column
           dataIndex="status"
           title="Status"
           responsive={['md', 'lg', 'xl']}
           render={(value, record) => (
             <TextField
-              value={record.isDir ? "None" : value === "in progress" ? "In Progress" : "Finished"}
+              value={record.isDir ? "Active" : value === "in progress" ? "In Progress" : "Finished"}
             />
           )}
         />

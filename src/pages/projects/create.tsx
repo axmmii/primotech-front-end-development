@@ -5,36 +5,46 @@ import { Form, Input, Select, DatePicker, InputNumber } from "antd";
 import dayjs from "dayjs";
 import { IProject } from "./interface";
 import { IEmployee } from "../employees/interface";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
+dayjs.tz.setDefault("Asia/Bangkok");
 
 export const ProjectCreate = () => {
-  const { formProps, saveButtonProps, query, onFinish } = useForm<IProject>();
+  const { formProps, saveButtonProps, query, onFinish } = useForm();
   const { selectProps } = useSelect<IEmployee>({
     resource: "employee",
     optionLabel: (item) => `${item.firstName}`,
     optionValue: (item) => item.firstName
    
   });
-  const submit = (e:any)=> {
-    console.log("st",e)
+  const submit = (e: any) => {
+    console.log("data create :", e);
     onFinish({
-      ...e,warranty: parseInt(e.warranty),
+      ...e,
+      startDate: e.startDate ? dayjs(e.startDate).tz("Asia/Bangkok").startOf("day").format("YYYY-MM-DDTHH:mm:ss[Z]") : null,
+      endDate: e.endDate ? dayjs(e.endDate).tz("Asia/Bangkok").startOf("day").format("YYYY-MM-DDTHH:mm:ss[Z]") : null,
+      warranty: parseInt(e.warranty),
     });
-    
-    
   };
   return (
     <Create saveButtonProps={saveButtonProps}>
-      <Form {...formProps} layout="vertical" onFinish={submit}>
+      <Form {...formProps}  layout="vertical" onFinish={submit} autoComplete="off">
         <Form.Item
+        
           label="Project Number:"
           name={"projectNumber"}
+          // style={{ width: "200px" }} 
           rules={[
             {
               required: true,
             },
           ]}
         >
-          <Input />
+          <Input autoComplete="off"/>
         </Form.Item>
         <Form.Item
           label="Project Name"
@@ -45,7 +55,7 @@ export const ProjectCreate = () => {
             },
           ]}
         >
-          <Input />
+          <Input autoComplete="off"/>
         </Form.Item>
         <Form.Item
           label="Customer"
@@ -67,7 +77,7 @@ export const ProjectCreate = () => {
             },
           ]}
         >
-          <Input />
+          <Input autoComplete="off"/>
         </Form.Item>
         <Form.Item
           label="Contact Number"
@@ -78,7 +88,7 @@ export const ProjectCreate = () => {
             },
           ]}
         >
-          <Input />
+          <Input autoComplete="off"/>
         </Form.Item>
         <Form.Item
           label="Project Manager"
@@ -95,38 +105,43 @@ export const ProjectCreate = () => {
             {...selectProps}
           />
         </Form.Item>
-        <Form.Item
+      <Form.Item
           label="Start Date"
           name={["startDate"]}
-          rules={[
-            {
-              required: false,
-            },
-          ]}
+          getValueProps={(value) => ({ value: value ? dayjs(value) : null })}
+          rules={[{ required: true, message: "Please select a start date!" }]}
         >
-          <Input />
+          <DatePicker  
+         style={{ width: "100%" }}
+          format="DD/MM/YYYY"
+          showTime={false}
+        />
         </Form.Item>
-        <Form.Item
+         <Form.Item
           label="End Date"
           name={["endDate"]}
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-        >
-          <Input />
+          getValueProps={(value) => ({ value: value ? dayjs(value) : null })}
+          rules={[{ required: true, message: "Please select an end date!" }]}
+           >
+          <DatePicker 
+            autoComplete="off"
+            format="DD/MM/YYYY"
+            showTime={false}
+            style={{ width: "100%" }}
+          />
         </Form.Item>
         <Form.Item
           label="Warranty (Day)"
           name={["warranty"]}
+          getValueProps={(value) => ({ value: value ? dayjs(value) : null })}
           rules={[
             {
               required: true,
+              message: "Please select a warranty date!",
             },
           ]}
         >
-          <Input />
+          <DatePicker autoComplete="off" format="DD/MM/YYYY" style={{ width: "100%" }}  />
         </Form.Item>
         <Form.Item
           label="Status"
@@ -142,6 +157,10 @@ export const ProjectCreate = () => {
               {
                 label: "New",
                 value: "New",
+              },
+              {
+                label: "On Process",
+                value: "On Process",
               },
               {
                 label: "On Process 20%",

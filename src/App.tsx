@@ -33,19 +33,22 @@ import { EmployeeCreate, EmployeeEdit, EmployeeList, EmployeeShow } from "./page
 import { ProjectCreate, ProjectEdit, ProjectList, ProjectShow } from "./pages/projects";
 import { FileManagerCreate, FileManagerEdit, FileManagerList, FileManagerShow } from "./pages/filemanagers";
 import { FolderOutlined, ProjectOutlined, TeamOutlined, UserOutlined } from "@ant-design/icons";
+import { accessControlProvider } from "./providers/accessControlProvider";
 
 function App() {
   return (
     (<BrowserRouter>
-      {/* <GitHubBanner /> */}
       <RefineKbarProvider>
         <ColorModeContextProvider>
           <AntdApp>
             <DevtoolsProvider>
-              <Refine dataProvider={dataProvider}
+              <Refine 
+              
+              dataProvider={dataProvider}
               
                 notificationProvider={useNotificationProvider}
                authProvider={authProvider}
+               accessControlProvider={accessControlProvider}
                routerProvider={routerBindings}
                 resources={[{
                   name: "user",
@@ -53,7 +56,8 @@ function App() {
                   create: "/user/create",
                   edit: "/user/edit/:id",
                   show: "/user/show/:id",
-                  icon: <UserOutlined />
+                  icon: <UserOutlined />,
+                  meta: { canAccess: "admin" }
                 }, {
                   name: "employee",
                   list: "/employee",
@@ -61,6 +65,7 @@ function App() {
                   edit: "/employee/edit/:id",
                   show: "/employee/show/:id",
                   icon: <TeamOutlined />,
+                  meta: { canCreate: ["admin"] },
                 }, {
                   name: "project",
                   list: "/project",
@@ -68,6 +73,7 @@ function App() {
                   edit: "/project/edit/:id",
                   show: "/project/show/:id",
                   icon: <ProjectOutlined />,
+                  meta: { canCreate: ["admin"] },
                 }, {
                   name: "fileManager",
                   list: "/fileManager",
@@ -75,8 +81,10 @@ function App() {
                   edit: "/fileManager/edit/:id",
                   show: "/fileManager/show/:id",
                   icon: <FolderOutlined />,
+                  meta: { canCreate: ["admin"] },
                 }, 
               ]}
+              
                 options={{
                   syncWithLocation: true,
                   warnWhenUnsavedChanges: true,
